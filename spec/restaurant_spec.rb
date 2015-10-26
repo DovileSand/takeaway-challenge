@@ -14,31 +14,15 @@ describe Restaurant do
 
   context '#order' do
 
-    it 'allows to select one of the available dishes' do
-      expect(restaurant.order(:Pizza)).to eq :Pizza
-    end
-
-    it 'allows to select several of the available dishes' do
-      restaurant.order(:Pizza)
-      restaurant.order(:Prawn_Toast)
-      expect(restaurant.basket.count).to eq 2
-    end
-
     it 'allows to select a number of the several available dishes' do
+      restaurant.order(:Pizza, 3)
+      expect(restaurant.basket).to include(:Pizza, 3)
+    end
 
+    it 'only allows to add items that are on th menu' do
+      expect(restaurant.order(:Chocolate, 1)).to eq 'The item is not on the menu.'
     end
 
   end
 
 end
-
-# describe Order do
-#   let(:menu) { double :menu, price: '£1.00', contains?: true }
-#   subject(:order) { described_class.new(menu) }
-#
-#   it 'order total to be sum of items added' do
-#     order.add('Pizza')
-#     order.add('Pizza')
-#     expect(order.total).to eq '£2.00'
-#   end
-# end

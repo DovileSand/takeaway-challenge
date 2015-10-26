@@ -15,11 +15,14 @@ class Restaurant
     @menu
   end
 
-  def order(item)
-    @menu.include?(item)
-    @basket.include?(item)
-
-    @basket.last
+  def order(item, qty)
+    if @menu.include?(item)
+      @basket << item
+      @basket << qty
+      @basket.last
+    else
+      'The item is not on the menu.'
+    end
   end
 
 end
