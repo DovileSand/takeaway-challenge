@@ -1,15 +1,27 @@
 require 'send_sms'
 
-describe TextMessenger do
-
-  let(:client) { double :client }
-  it "can send text" do
-    allow(described_class).to receive(:send_sms)
-    message = 'Your order was accepted.'
-    twilio_message_body = { from: ENV['TWILIO_ACC_NO'], to: ENV['MY_NO'], body: message }
-    allow(client).to receive_message_chain(:messages, :create).with(twilio_message_body)
-    expect(Twilio::REST::Client).to receive(:new).with(ENV['TWILIO_ACC_SID'], ENV['TWILIO_ACC_TOKEN']).and_return(client)
-    described_class.send_sms
+describe Sms do
+  subject(:sms) {described_class.new(config, client: client)}
+  let(:client) {double(:client, messages: messages)}
+  let(:messages) {double(:messages)}
+  let(:config) do
+    {
+    account_sid: "123",
+    auth_token: "23fds",
+    from: "+123",
+    to: "+234",
+    body: "Thank you! Your order will be delivered before %s"
+    }
   end
 
+  it 'delivers an SMS with the estimated time' do
+    args = {
+      from: config[:from],
+      to: config[:to],
+      body: "Thank you! Your order will be delivered before 18:52"
+    }
+    allow(Time).to receive(:now).and_return(Time.parse("17:52"))
+    expect(messages).to receive(:create).with(args)
+    sms.deliver
+  end
 end
